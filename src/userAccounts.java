@@ -49,7 +49,35 @@ public class userAccounts {
 		userId = u;
 		password = p;
 	}
-	
+	/*
+	public void createTable(){
+		Connection c = null;
+	       Statement stmt = null;
+	       try {
+	         Class.forName("org.postgresql.Driver");
+	         c = DriverManager
+	            .getConnection("jdbc:postgresql://localhost:5433/test",
+	            "postgres", "aaronrocks");
+	         System.out.println("Opened database successfully");
+
+	         stmt = c.createStatement();
+	         String sql = "CREATE TABLE INVENTORY " +
+	                      "(SKU INT PRIMARY KEY     NOT NULL," +
+	                      " NAME           TEXT    NOT NULL, " +
+	                      " QUANTITY       FLOAT     NOT NULL, " +
+	                      " PRICE          FLOAT   NOT NULL, " +
+	                      " DISTRIBUTOR    TEXT    NOT NULL," +
+	                      " WEIGHT         TEXT     NOT NULL)";
+	         stmt.executeUpdate(sql);
+	         stmt.close();
+	         c.close();
+	       } catch ( Exception e ) {
+	         System.err.println( e.getClass().getName()+": "+ e.getMessage() );
+	         System.exit(0);
+	       }
+	       System.out.println("Table created successfully");
+	}
+	*/
 	public boolean loginCheck(){					//check logins
 		
 		//get user input
