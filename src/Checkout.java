@@ -10,15 +10,15 @@ import java.util.Scanner;
 import java.util.Vector;
 
 public class Checkout {
-	
+
 	Receipt checkReceipt;
 	Vector<Item> checkoutItems;
-	
+
 	public Checkout(){
 		checkReceipt = new Receipt();
 		checkoutItems = new Vector<Item>();
 	}
-	
+
 	public void askForSku(){
         //read input
 		Scanner reader = new Scanner(System.in);
@@ -29,10 +29,10 @@ public class Checkout {
 			if(!input.equals("q")) {
 				this.addItems(input);
 			}
-			
+
 		}
 	}
-	
+
 	public void addItems(String s){
 		Connection c = null;
 	       Statement stmt = null;
@@ -44,10 +44,10 @@ public class Checkout {
 	         c.setAutoCommit(false);
 	         System.out.println("Opened database successfully");
 	         stmt = c.createStatement();
-	         
+
 
 	         Item getItem = new Item();
-	         
+
 	         ResultSet rs = stmt.executeQuery( "SELECT * FROM INVENTORY WHERE sku = " + s + ";" );
 	         while ( rs.next() ) {
 	        	 getItem.setSku(rs.getInt("sku"));
@@ -56,11 +56,11 @@ public class Checkout {
 	        	 getItem.setPrice(rs.getFloat("price"));
 	        	 getItem.setDist(rs.getString("distributor"));
 	        	 getItem.setWeight(rs.getString("weight"));
-	        	 
+
 	        	 checkoutItems.add(getItem);
 	         }
-	         
-	         
+
+
 	         rs.close();
 	         stmt.close();
 	         c.close();
@@ -70,13 +70,13 @@ public class Checkout {
 	       }
 	       System.out.println("Operation done successfully");
 	}
-	
+
 	public void addPaymentType(){
 		Scanner reader = new Scanner(System.in);
 		System.out.println("Enter the payment type: ");
 		String input = reader.next();
 		checkReceipt.setPayMethod(input);
-		
+
 		//get time and date
 		Date dNow = new Date( );
 	    SimpleDateFormat ft = new SimpleDateFormat ("MM-dd-yy");
@@ -85,17 +85,17 @@ public class Checkout {
 	    ft = new SimpleDateFormat("h:mma");
 	    	//System.out.println(ft.format(dNow).toString());
 	    checkReceipt.setTime(ft.format(dNow).toString());
-	    
+
 	}
-	
+
 	public void createRecTrans(){
 		checkReceipt.setItemVector(checkoutItems);
 		checkReceipt.createReceipt();
 	}
-	
+
 	public void updateInventory(){
-		
+
 	}
-	
-	
+
+
 }
