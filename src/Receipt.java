@@ -93,8 +93,8 @@ public class Receipt {
 	      try {
 	         Class.forName("org.postgresql.Driver");
 	         c = DriverManager
-	            .getConnection("jdbc:postgresql://localhost:5433/test",
-	            "postgres", "aaronrocks");
+	            .getConnection("jdbc:postgresql://vowoodhome.asuscomm.com:5454/test",
+	            "postgres", "toothpaste");
 	         c.setAutoCommit(false);
 	         System.out.println("Opened database successfully");
 	         
@@ -123,12 +123,12 @@ public class Receipt {
 	       try {
 	       Class.forName("org.postgresql.Driver");
 	         c = DriverManager
-	            .getConnection("jdbc:postgresql://localhost:5433/test",
-	            "postgres", "aaronrocks");
+	            .getConnection("jdbc:postgresql://vowoodhome.asuscomm.com:5454/test",
+	            "postgres", "toothpaste");
 	         c.setAutoCommit(false);
 	         c2 = DriverManager
-	 	            .getConnection("jdbc:postgresql://localhost:5433/test",
-	 	            "postgres", "aaronrocks");
+	 	            .getConnection("jdbc:postgresql://vowoodhome.asuscomm.com:5454/test",
+	 	            "postgres", "toothpaste");
 	 	     c2.setAutoCommit(false);
 	 	     
 	         System.out.println("Opened database successfully");
@@ -205,18 +205,18 @@ public class Receipt {
 	      try {
 	         Class.forName("org.postgresql.Driver");
 	         c = DriverManager
-	            .getConnection("jdbc:postgresql://localhost:5433/test",			//connection for look up of items
-	            "postgres", "aaronrocks");
+	            .getConnection("jdbc:postgresql://vowoodhome.asuscomm.com:5454/test",			//connection for look up of items
+	            "postgres", "toothpaste");
 	         c.setAutoCommit(false);
 	         
 	         c2 = DriverManager
-	 	            .getConnection("jdbc:postgresql://localhost:5433/test",		//connection for latest receipt number
-	 	            "postgres", "aaronrocks");
+	 	            .getConnection("jdbc:postgresql://vowoodhome.asuscomm.com:5454/test",		//connection for latest receipt number
+	 	            "postgres", "toothpaste");
 	 	     c2.setAutoCommit(false);
 	         
 	         cs = DriverManager
-	 	            .getConnection("jdbc:postgresql://localhost:5433/test",		//connection for insert into database
-	 	            "postgres", "aaronrocks");
+	 	            .getConnection("jdbc:postgresql://vowoodhome.asuscomm.com:5454/test",		//connection for insert into database
+	 	            "postgres", "toothpaste");
 	 	     cs.setAutoCommit(false);
 	         System.out.println("Opened database successfully");
 	         

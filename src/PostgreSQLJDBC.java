@@ -11,7 +11,8 @@ import java.sql.Statement;
 public class PostgreSQLJDBC {
 	
    public static void main( String args[] ){
-       
+
+       MainScreen ms = new MainScreen();
        //insert into table:
        userAccounts myUser = new userAccounts();
       // myUser.createTable();

@@ -18,8 +18,8 @@ public class InventoryMan {
 	         
 	         //getting the database, user, password:
 	         c = DriverManager
-	            .getConnection("jdbc:postgresql://localhost:5433/test",
-	            "postgres", "aaronrocks");
+	            .getConnection("jdbc:postgresql://vowoodhome.asuscomm.com:5454/test",
+	            "postgres", "toothpaste");
 	         
 	         c.setAutoCommit(false);
 	         System.out.println("Opened database successfully");
@@ -78,8 +78,8 @@ public class InventoryMan {
 	      try {
 	      Class.forName("org.postgresql.Driver");
 	        c = DriverManager
-	           .getConnection("jdbc:postgresql://localhost:5433/test",
-	           "postgres", "aaronrocks");
+	           .getConnection("jdbc:postgresql://vowoodhome.asuscomm.com:5454/test",
+	           "postgres", "toothpaste");
 	        c.setAutoCommit(false);
 	        System.out.println("Opened database successfully");
 

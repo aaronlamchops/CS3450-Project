@@ -11,7 +11,6 @@ public class MainScreen extends JFrame {
     private JPanel rootPanel;
     private JTabbedPane TabPane;
     private JPanel CheckedItemsPanel;
-    private JList TransactionList;
     private JPanel ItemPricePanel;
     private JList list1;
     private JButton checkOutButton;
@@ -41,6 +40,12 @@ public class MainScreen extends JFrame {
     private JButton addNewUserButton;
     private JButton removeUserButton;
     private JButton editUserButton;
+    private JButton addNewItemButton;
+    private JButton modifyItemButton;
+    private JButton addItemButton;
+    private JTextField ReceiptNoText;
+    private JTextField DateText;
+    private JTextField ItemPurchaseList;
 
     public MainScreen() {
         super("Mr. Smith's Grocery");
@@ -121,6 +126,22 @@ public class MainScreen extends JFrame {
                             JOptionPane.ERROR_MESSAGE);
                     TabPane.setSelectedIndex(0);
                 }
+
+            }
+        });
+        SearchResults.addComponentListener(new ComponentAdapter() {
+        });
+        SearchResults.addFocusListener(new FocusAdapter() {
+        });
+        addNewUserButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+        addItemButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
 
             }
         });
