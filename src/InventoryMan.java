@@ -71,8 +71,9 @@ public class InventoryMan {
 		return true;
 	}
 	
-	public void searchItem(){
+	public String searchItem(String searchItem){
 		Scanner reader = new Scanner(System.in);
+		Item invItem = new Item();
 		Connection c = null;
 	      Statement stmt = null;
 	      try {
@@ -85,25 +86,25 @@ public class InventoryMan {
 
 	        stmt = c.createStatement();
 	        ResultSet rs;
-	        System.out.print("Search: ");
+	        //System.out.print("Search: ");
 	        
 	        //checks what kind of input
-	        if(reader.hasNextInt()){
-	        	rs = stmt.executeQuery( "SELECT * FROM INVENTORY WHERE sku = " + reader.nextInt() + ";");
+	        if(searchItem.matches(".*\\d.*")){
+	        	rs = stmt.executeQuery( "SELECT * FROM INVENTORY WHERE sku = " + searchItem + ";");
 	        }
-	        else if(reader.hasNextDouble()){
-	        	String doubleSearch = reader.nextLine();
-	        	rs = stmt.executeQuery( "SELECT * FROM INVENTORY WHERE quantity = " + doubleSearch + " OR "
-	        			+ "price = " + doubleSearch + ";");
-	        }
+//	        else if(reader.hasNextDouble()){
+//	        	String doubleSearch = searchItem;
+//	        	rs = stmt.executeQuery( "SELECT * FROM INVENTORY WHERE quantity = " + doubleSearch + " OR "
+//	        			+ "price = " + doubleSearch + ";");
+//	        }
 	        else{
-	        	String input = reader.nextLine();
+	        	String input = searchItem;
 		        rs = stmt.executeQuery( "SELECT * FROM INVENTORY WHERE name LIKE '" + input + "%' OR "
 		        		+ "distributor LIKE '" + input + "%' OR "
 		        				+ "weight LIKE '" + input + "%';");
 	        }
 	        
-	        Item invItem = new Item();
+	        System.out.println("here");
 	        
 	        while ( rs.next() ) {
 	        	//
@@ -115,21 +116,19 @@ public class InventoryMan {
 	           invItem.setWeight(rs.getString("weight"));
 	           
 	           //print out:
-	           System.out.println( "SKU = " + invItem.getSku() );
-	           System.out.println( "NAME = " + invItem.getName() );
-	           System.out.println( "QUANTITY = " + invItem.getQuantity() );
-	           System.out.println( "PRICE = " + invItem.getPrice() );
-	           System.out.println( "DISTRIBUTOR = " + invItem.getDist() );
-	           System.out.println( "WEIGHT = " + invItem.getWeight() );
-	           System.out.println();
+	           System.out.println(invItem.toString());	//needs to output to a jtextarea
+	           
 	        }
 	        rs.close();
 	        stmt.close();
 	        c.close();
+	        
 	      } catch ( Exception e ) {
 	        System.err.println( e.getClass().getName()+": "+ e.getMessage() );
 	        System.exit(0);
 	      }
 	      System.out.println("Operation done successfully");
+		return invItem.toString();
+	      
 	}
 }

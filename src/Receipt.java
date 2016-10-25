@@ -85,6 +85,28 @@ public class Receipt {
 		return items;
 	}
 	
+	public String vectorToString(){
+		
+		String items = "ITEMS: \r";
+		
+		for (int i = 0; i < this.getItemVector().size(); i++){
+        	items = items.concat(this.getItemVector().elementAt(i).toString());
+        	//items.concat(" ");
+        }
+		
+		return items;
+	}
+	
+	public String toString(){
+		return "Receipt #" + this.getReceiptNum() + "\r"
+				+ "Date: " + this.getDate() + "\r"
+				+ "Time: " + this.getTime() + "\r"
+				+ "Payment Method: " + this.getPayMethod() + "\r"
+				+ "Total = " + this.getTotalPay() + "\r"
+				+ "Items: " + this.vectorToString();
+	}
+	
+	
 	//inserts a default receipt
 	public void insertReceipt(){			
 		Scanner reader = new Scanner(System.in);
@@ -114,8 +136,9 @@ public class Receipt {
 	}
 	
 	//returns a receipt from the data base.
-	public void returnReceipt(){
-		Scanner reader = new Scanner(System.in);
+	public String returnReceipt(String search){
+		//Scanner reader = new Scanner(System.in);
+		Receipt newReceipt = new Receipt();
 		Connection c = null;
 		Connection c2 = null;
 	       Statement stmt = null;
@@ -133,14 +156,12 @@ public class Receipt {
 	 	     
 	         System.out.println("Opened database successfully");
 	         
-	         System.out.println("Please enter your receipt number: ");
-	         String input = reader.next();
 	         
-	         Receipt newReceipt = new Receipt();
+	         
 	         
 	         stmt = c.createStatement();
 	         stmt2 = c2.createStatement();
-	         ResultSet rs = stmt.executeQuery( "SELECT * FROM RECEIPTS WHERE receiptnumber = " + input + ";" );
+	         ResultSet rs = stmt.executeQuery( "SELECT * FROM RECEIPTS WHERE receiptnumber = " + search + ";" );
 	         ResultSet ss;
 	         
 	         //first connection to grab everything but item list
@@ -173,16 +194,17 @@ public class Receipt {
 	            
 	            newReceipt.setItemVector(realItems);
 	            
-	            System.out.println( "RECEIPT NUMBER = " + newReceipt.getReceiptNum() );
-	            System.out.println( "DATE = " +  newReceipt.getDate() );
-	            System.out.println( "TIME = " + newReceipt.getTime() );
-	            System.out.println( "PAY METHOD = " + newReceipt.getPayMethod() );
-	            System.out.println( "TOTAL PAY = " +  newReceipt.getTotalPay());
-	            System.out.println( "-------------------");
-	            for (int i = 0; i < newReceipt.getItemVector().size(); i++){
-	            	System.out.println(newReceipt.getItemVector().elementAt(i).toString());
-	            	System.out.println();
-	            }
+//	            System.out.println( "RECEIPT NUMBER = " + newReceipt.getReceiptNum() );
+//	            System.out.println( "DATE = " +  newReceipt.getDate() );
+//	            System.out.println( "TIME = " + newReceipt.getTime() );
+//	            System.out.println( "PAY METHOD = " + newReceipt.getPayMethod() );
+//	            System.out.println( "TOTAL PAY = " +  newReceipt.getTotalPay());
+//	            System.out.println( "-------------------");
+////	            for (int i = 0; i < newReceipt.getItemVector().size(); i++){
+////	            	System.out.println(newReceipt.getItemVector().elementAt(i).toString());
+////	            	System.out.println();
+////	            }
+//	            System.out.println(newReceipt.vectorToString());
 	            
 	         }
 	         
@@ -194,6 +216,7 @@ public class Receipt {
 	         System.exit(0);
 	       }
 	       System.out.println("Operation done successfully");
+	       return newReceipt.toString();
 	}
 	
 	public void createReceipt(){	//creates a receipt based off of checkout items

@@ -83,4 +83,17 @@ public class Item {
 	public void setWeight(String w){
 		weight = w;
 	}
+	
+	public String skuToString(){
+		return "SKU: " + this.getSku();
+	}
+	
+	public String toString(){
+		return "SKU = " + this.getSku() + "\r" +
+				"NAME = " + this.getName() + "\r" +
+				"QUANTITY = " + this.getQuantity() + "\r" +
+				"PRICE = " + this.getPrice() + "\r" +
+				"DISTRIBUTOR = " + this.getDist() + "\r" +
+				"Weight = " + this.getWeight();
+	}
 }

@@ -14,11 +14,17 @@ public class PostgreSQLJDBC {
        
        //insert into table:
        userAccounts myUser = new userAccounts();
+       Receipt myReceipt = new Receipt();
+       Checkout myCheckout = new Checkout();
+       //myCheckout.askForSku();
+       //myCheckout.addPaymentType();
+       //myCheckout.createRecTrans();
+       //myReceipt.returnReceipt("123");
       // myUser.createTable();
-       //MainScreen screen = new MainScreen();
-       InventoryMan newInv = new InventoryMan();
+       MainScreen screen = new MainScreen();
+       //InventoryMan newInv = new InventoryMan();
        //newInv.uploadNewItem();
-       newInv.searchItem();
+       //newInv.searchItem();
        //calling a function from UserAccounts.java
 //       myUser.loginCheck();
 //       System.out.println(myUser.toString());

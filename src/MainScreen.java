@@ -5,13 +5,15 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 public class MainScreen extends JFrame {
     private JPanel rootPanel;
     private JTabbedPane TabPane;
     private JPanel CheckedItemsPanel;
-    private JList TransactionList;
     private JPanel ItemPricePanel;
     private JList list1;
     private JButton checkOutButton;
@@ -25,7 +27,9 @@ public class MainScreen extends JFrame {
     private JPanel InvMgmt;
     private JPanel UserCtrl;
     private JList SearchResults;
+    private JList SearchResultsREC;
     private JPanel ResultsWindow;
+    private JPanel rtResultsWindow;
     private JRadioButton itemRadioButton;
     private JRadioButton distributorRadioButton;
     private JRadioButton receiptNumberRadioButton;
@@ -41,6 +45,14 @@ public class MainScreen extends JFrame {
     private JButton addNewUserButton;
     private JButton removeUserButton;
     private JButton editUserButton;
+    private JButton addNewItemButton;
+    private JButton modifyItemButton;
+    private JButton addItemButton;
+    private JTextField ReceiptNoText;
+    private JTextField DateText;
+    private JList ItemPurchaseList;
+    private JList RetResultsList;
+    private JScrollPane RetResultsScrollPane;
 
     public MainScreen() {
         super("Mr. Smith's Grocery");
@@ -121,6 +133,28 @@ public class MainScreen extends JFrame {
                             JOptionPane.ERROR_MESSAGE);
                     TabPane.setSelectedIndex(0);
                 }
+                if (TabPane.getSelectedIndex() == 1)
+                {
+                    DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+                    Date dateobj = new Date();
+                    DateText.setText(df.format(dateobj));
+                }
+
+            }
+        });
+        SearchResults.addComponentListener(new ComponentAdapter() {
+        });
+        SearchResults.addFocusListener(new FocusAdapter() {
+        });
+        addNewUserButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+        addItemButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
 
             }
         });
@@ -182,8 +216,8 @@ public class MainScreen extends JFrame {
         CheckedItemsPanel.setBorder(BorderFactory.createTitledBorder("Checked Items"));
         final JScrollPane scrollPane1 = new JScrollPane();
         CheckedItemsPanel.add(scrollPane1, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        TransactionList = new JList();
-        scrollPane1.setViewportView(TransactionList);
+        ItemPurchaseList = new JList();
+        scrollPane1.setViewportView(ItemPurchaseList);
         ItemPricePanel = new JPanel();
         ItemPricePanel.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         CheckoutTab.add(ItemPricePanel, new com.intellij.uiDesigner.core.GridConstraints(0, 4, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(164, 244), null, 0, false));
@@ -251,6 +285,35 @@ public class MainScreen extends JFrame {
         panel3.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         RetMgmt.add(panel3, new com.intellij.uiDesigner.core.GridConstraints(1, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JPanel panel4 = new JPanel();
+        
+        
+        rtResultsWindow = new JPanel();
+        rtResultsWindow.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        RetMgmt.add(rtResultsWindow, new com.intellij.uiDesigner.core.GridConstraints(1, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        final JScrollPane scrollPaneRT = new JScrollPane();
+        rtResultsWindow.add(scrollPaneRT, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+
+      //for the receipt data
+      final DefaultListModel listModelReceipts;
+      listModelReceipts = new DefaultListModel();
+      SearchResultsREC = new JList(listModelReceipts);
+
+
+      final Receipt receiptData = new Receipt();
+      searchButton.addActionListener(new ActionListener() {
+          public void actionPerformed(ActionEvent e) { 
+          	String searchItem = ReceiptIDField.getText();
+          	String returnSearch = ReceiptIDField.getText();
+          	
+          	
+          	
+          	System.out.println(receiptData.returnReceipt(searchItem));
+          	listModelReceipts.addElement(receiptData.returnReceipt(searchItem));
+          	
+          }
+       });
+      	scrollPaneRT.setViewportView(SearchResultsREC);
+        
         panel4.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         RetMgmt.add(panel4, new com.intellij.uiDesigner.core.GridConstraints(1, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         InvMgmt = new JPanel();
@@ -280,8 +343,27 @@ public class MainScreen extends JFrame {
         InvMgmt.add(ResultsWindow, new com.intellij.uiDesigner.core.GridConstraints(1, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JScrollPane scrollPane3 = new JScrollPane();
         ResultsWindow.add(scrollPane3, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        SearchResults = new JList();
+//        SearchResults = new JList();
+        
+      //creates a jlist item element for the search results
+        final DefaultListModel listModel;
+        listModel = new DefaultListModel();
+        SearchResults = new JList(listModel);
+
+
+        //button listener for search in inventory
+        final InventoryMan inventory = new InventoryMan();
+        button1.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {     
+               //inventory.searchItem(textArea1.getText());  
+            	String searchItem = textArea1.getText();
+            	System.out.println(inventory.searchItem(searchItem));
+            	listModel.addElement(inventory.searchItem(searchItem));
+            }
+         });
+        
         scrollPane3.setViewportView(SearchResults);
+        
         UserCtrl = new JPanel();
         UserCtrl.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
         TabPane.addTab("User Ctrl.", UserCtrl);
