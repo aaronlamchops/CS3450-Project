@@ -27,6 +27,15 @@ public class Item {
 		weight = w;
 	}
 	
+	public Item(Item newItem){
+		sku = newItem.getSku();
+		name = newItem.getName();
+		quantity = newItem.getQuantity();
+		price = newItem.getPrice();
+		distributor = newItem.getDist();
+		weight = newItem.getWeight();
+	}
+	
 	public void setItems(int s, String n, double q, double p, String d, String w){
 		sku = s;
 		name = n;

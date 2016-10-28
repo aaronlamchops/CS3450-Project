@@ -9,8 +9,7 @@ import java.util.Vector;
 
 public class InventoryMan {
 	
-	public void uploadNewItem(){
-		Scanner reader = new Scanner(System.in);
+	public Boolean uploadNewItem(Item uploadItem){
 		Connection c = null;
 	      Statement stmt = null;
 	      try {
@@ -26,21 +25,7 @@ public class InventoryMan {
 
 	         stmt = c.createStatement();
 	         
-	         Item newItem = new Item();
-	         
-	           // Reading from System.in
-	         System.out.println("Please enter a new sku: ");
-	         newItem.setSku(reader.nextInt());
-	         System.out.println("Please enter name of product: ");
-	         newItem.setName(reader.next());
-	         System.out.println("Please enter quantity: ");
-	         newItem.setQuantity(reader.nextDouble());
-	         System.out.println("Please enter price: ");
-	         newItem.setPrice(reader.nextDouble());
-	         System.out.println("Please enter distributor: ");
-	         newItem.setDist(reader.next());
-	         System.out.println("Please enter weight: ");
-	         newItem.setWeight(reader.next());
+	         Item newItem = new Item(uploadItem);
 	         
 	         //the commands that you are utilizing in the database
 	         String sql = "INSERT INTO INVENTORY (SKU,NAME,QUANTITY,PRICE,DISTRIBUTOR,WEIGHT) "
@@ -56,9 +41,11 @@ public class InventoryMan {
 	         c.close();
 	      } catch (Exception e) {
 	         System.err.println( e.getClass().getName()+": "+ e.getMessage() );
-	         System.exit(0);
+	         return false;
+	         //System.exit(0);
 	      }
 	      System.out.println("Records created successfully");
+	      return true;
 	}
 	
 	static boolean intOrNot(String input){
@@ -71,10 +58,82 @@ public class InventoryMan {
 		return true;
 	}
 	
-	public String searchItem(String searchItem){
-		Scanner reader = new Scanner(System.in);
-		Item invItem = new Item();
+	public void updateItem(Item toUpdateItem, int sku){
+		
 		Connection c = null;
+	    Statement stmt = null;
+	    Statement stmt2 = null;
+	    Statement stmt3 = null;
+	    Statement stmt4 = null;
+	    Statement stmt5 = null;
+	    
+	    try {
+	    Class.forName("org.postgresql.Driver");
+	        c = DriverManager.getConnection("jdbc:postgresql://localhost:5433/test","postgres", "aaronrocks");
+	        c.setAutoCommit(false);
+	        System.out.println("Opened database successfully");
+	        stmt = c.createStatement();
+	        String sql = "UPDATE INVENTORY SET NAME = " + "'" + toUpdateItem.getName() + "'" + " where SKU = " + sku + ";";
+	        stmt.executeUpdate(sql);
+	        
+	        stmt2 = c.createStatement();
+	        String sql2 = "UPDATE INVENTORY SET QUANTITY = " + "'" + toUpdateItem.getQuantity() + "'" + " where SKU = " + sku + ";";
+	        stmt2.executeUpdate(sql2);
+	        
+	        stmt3 = c.createStatement();
+	        String sql3 = "UPDATE INVENTORY SET PRICE = " + "'" + toUpdateItem.getPrice() + "'" + " where SKU = " + sku + ";";
+	        stmt3.executeUpdate(sql3);
+	        
+	        stmt4 = c.createStatement();
+	        String sql4 = "UPDATE INVENTORY SET DISTRIBUTOR = " + "'" + toUpdateItem.getDist() + "'" + " where SKU = " + sku + ";";
+	        stmt4.executeUpdate(sql4);
+	        
+	        stmt5 = c.createStatement();
+	        String sql5 = "UPDATE INVENTORY SET WEIGHT = " + "'" + toUpdateItem.getWeight() + "'" + " where SKU = " + sku + ";";
+	        stmt5.executeUpdate(sql5);
+	        
+	        c.commit();
+	        stmt.close();
+	        c.close();
+	       	} catch ( Exception e ) {
+	       		System.err.println( e.getClass().getName()+": "+ e.getMessage() );
+	       		System.exit(0);
+	       }
+	       System.out.println("Operation done successfully");
+	}
+	
+	public Boolean deleteItem(int sku){
+		
+		Connection c = null;
+	    Statement stmt = null;
+	    
+	    try {
+	    Class.forName("org.postgresql.Driver");
+	        c = DriverManager.getConnection("jdbc:postgresql://localhost:5433/test","postgres", "aaronrocks");
+	        c.setAutoCommit(false);
+	        System.out.println("Opened database successfully");
+	        
+	        //statement to execute
+	        stmt = c.createStatement();
+	        String sql = "DELETE FROM inventory WHERE SKU = " + sku + ";";
+	        stmt.executeUpdate(sql);
+	        
+	        c.commit();
+	        stmt.close();
+	        c.close();
+	        
+	       	} catch ( Exception e ) {
+	       		System.err.println( e.getClass().getName()+": "+ e.getMessage() );
+	       		System.exit(0);
+	       	}
+	       	System.out.println("Operation done successfully");
+		
+		return true;
+	}
+	
+	public String searchItem(String searchItem){
+		  Item invItem = new Item();
+		  Connection c = null;
 	      Statement stmt = null;
 	      try {
 	      Class.forName("org.postgresql.Driver");
@@ -86,17 +145,11 @@ public class InventoryMan {
 
 	        stmt = c.createStatement();
 	        ResultSet rs;
-	        //System.out.print("Search: ");
 	        
 	        //checks what kind of input
 	        if(searchItem.matches(".*\\d.*")){
 	        	rs = stmt.executeQuery( "SELECT * FROM INVENTORY WHERE sku = " + searchItem + ";");
 	        }
-//	        else if(reader.hasNextDouble()){
-//	        	String doubleSearch = searchItem;
-//	        	rs = stmt.executeQuery( "SELECT * FROM INVENTORY WHERE quantity = " + doubleSearch + " OR "
-//	        			+ "price = " + doubleSearch + ";");
-//	        }
 	        else{
 	        	String input = searchItem;
 		        rs = stmt.executeQuery( "SELECT * FROM INVENTORY WHERE name LIKE '" + input + "%' OR "
@@ -129,6 +182,5 @@ public class InventoryMan {
 	      }
 	      System.out.println("Operation done successfully");
 		return invItem.toString();
-	      
 	}
 }

@@ -137,7 +137,6 @@ public class Receipt {
 	
 	//returns a receipt from the data base.
 	public String returnReceipt(String search){
-		//Scanner reader = new Scanner(System.in);
 		Receipt newReceipt = new Receipt();
 		Connection c = null;
 		Connection c2 = null;
@@ -156,9 +155,6 @@ public class Receipt {
 	 	     
 	         System.out.println("Opened database successfully");
 	         
-	         
-	         
-	         
 	         stmt = c.createStatement();
 	         stmt2 = c2.createStatement();
 	         ResultSet rs = stmt.executeQuery( "SELECT * FROM RECEIPTS WHERE receiptnumber = " + search + ";" );
@@ -171,6 +167,8 @@ public class Receipt {
 	            newReceipt.setTime(rs.getString("time"));
 	            newReceipt.setPayMethod(rs.getString("paymethod"));
 	            newReceipt.setTotalPay(rs.getFloat("totalpay"));
+	            
+	            //allows for sql arrays to be converted to a vector of items
 	            Array its = rs.getArray(6);
 	            String[] str_items = (String[])its.getArray();
 	            Vector<String> newItem_str = new Vector<String>(Arrays.asList(str_items));
@@ -189,25 +187,9 @@ public class Receipt {
 	            		fromData.setWeight(ss.getString("weight"));
 	            	}
 	            	realItems.add(fromData);
-	            	//ss.close();
-	            }
-	            
+	            }  
 	            newReceipt.setItemVector(realItems);
-	            
-//	            System.out.println( "RECEIPT NUMBER = " + newReceipt.getReceiptNum() );
-//	            System.out.println( "DATE = " +  newReceipt.getDate() );
-//	            System.out.println( "TIME = " + newReceipt.getTime() );
-//	            System.out.println( "PAY METHOD = " + newReceipt.getPayMethod() );
-//	            System.out.println( "TOTAL PAY = " +  newReceipt.getTotalPay());
-//	            System.out.println( "-------------------");
-////	            for (int i = 0; i < newReceipt.getItemVector().size(); i++){
-////	            	System.out.println(newReceipt.getItemVector().elementAt(i).toString());
-////	            	System.out.println();
-////	            }
-//	            System.out.println(newReceipt.vectorToString());
-	            
-	         }
-	         
+	         } 
 	         rs.close();
 	         stmt.close();
 	         c.close();
