@@ -18,6 +18,7 @@ public class PostgreSQLJDBC {
 /*Test Trials for RECEIPT*/       
        Receipt myReceipt = new Receipt();
        //myReceipt.returnReceipt("123");
+       //myReceipt.returnBackItem("54334", 87654, 2.0);
        
        
 /*Test Trials for CHECKOUT*/

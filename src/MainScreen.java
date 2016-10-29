@@ -15,7 +15,7 @@ public class MainScreen extends JFrame {
     private JTabbedPane TabPane;
     private JPanel CheckedItemsPanel;
     private JPanel ItemPricePanel;
-    private JList list1;
+    private JList ItemPriceList;
     private JButton checkOutButton;
     private JButton voidLastItemButton;
     private JPanel CheckoutTab;
@@ -27,11 +27,9 @@ public class MainScreen extends JFrame {
     private JPanel InvMgmt;
     private JPanel UserCtrl;
     private JList SearchResults;
-    private JList SearchResultsREC;
     private JPanel ResultsWindow;
-    private JPanel rtResultsWindow;
-    private JRadioButton itemRadioButton;
-    private JRadioButton distributorRadioButton;
+    private JRadioButton InvItemRadioButton;
+    private JRadioButton InvDistRadioButton;
     private JRadioButton receiptNumberRadioButton;
     private JRadioButton custNameRadioButton;
     private JButton logOutButton;
@@ -42,29 +40,70 @@ public class MainScreen extends JFrame {
     private JPasswordField CardDigitSet2;
     private JPasswordField CardDigitSet3;
     private JTextField CardDigitSet4;
-    private JButton addNewUserButton;
-    private JButton removeUserButton;
-    private JButton editUserButton;
+    private JButton addNewUserButt;
+    private JButton removeUserButt;
+    private JButton editUserButt;
     private JButton addNewItemButton;
     private JButton modifyItemButton;
     private JButton addItemButton;
     private JTextField ReceiptNoText;
     private JTextField DateText;
     private JList ItemPurchaseList;
-    private JList RetResultsList;
-    private JScrollPane RetResultsScrollPane;
+    private JList RetSearchResList;
+    private JScrollPane RetSearchResSP;
+    private JLabel NavInstructionLabel;
+    private JLabel WelcomeLbl;
+    private JLabel SecondaryNavInstLabel;
+    private JPanel LogOutPanel;
+    private JScrollPane ItemPurchScrollPane;
+    private JScrollPane ItemPriceListSP;
+    private JPanel PmtTypePanel;
+    private JLabel CardNumPromptLabel;
+    private JToolBar RetSearchBar;
+    private JLabel RetSearchLabel;
+    private JPanel RetSearchResPanel;
+    private JPanel SecondaryRetSearchResPanel;
+    private JList SecondRetSearchResList;
+    private JScrollPane SecondRetSearchResSP;
+    private JToolBar InvSearchBar;
+    private JLabel InvSearchLbl;
+    private JTextArea InvSearchTermText;
+    private JButton InvSearchButt;
+    private JScrollPane SearchResultsSP;
+    private JPanel InventoryButtPanel;
+    private JPanel MCCWelcomePanel;
+    private JLabel MCCTitleText;
+    private JLabel MCCNavText;
+    private JPanel MCCButtPanel;
+
 
     public MainScreen() {
+
         super("Mr. Smith's Grocery");
+
         setContentPane(rootPanel);
 
         setPreferredSize(new Dimension(1200, 800));
 
         pack();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        LogInScrn li = new LogInScrn();
 
-        setVisible(true);
+        final userAccounts ua = new userAccounts();
 
+        Object [] returnedFromLogin = {};
+        int loginSuccess = 0;
+        while (loginSuccess == 0) {
+
+            returnedFromLogin = (li.showLogin());
+
+            loginSuccess = (Integer)returnedFromLogin[0];
+            ua.setEq((userAccounts)returnedFromLogin[1]);
+
+
+            if (loginSuccess == 1)
+                setVisible(true);
+        }
 
         cardRadioButton.addActionListener(new ActionListener() {
             @Override
@@ -126,15 +165,15 @@ public class MainScreen extends JFrame {
         TabPane.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                if (TabPane.getSelectedIndex() == 4) {
+                if (TabPane.getSelectedIndex() == 4 && !ua.accType.equals("admin")) {
                     JOptionPane.showMessageDialog(TabPane,
-                            "This tab is for the manager's eyes only.\nPlease log in as a manager and try again.",
+                            "This tab is for the manager's eyes only.\nPlease log in as a manager and try again." +
+                            "\nCurrent account type: " +ua.accType,
                             "Get Outta Here!",
                             JOptionPane.ERROR_MESSAGE);
                     TabPane.setSelectedIndex(0);
                 }
-                if (TabPane.getSelectedIndex() == 1)
-                {
+                if (TabPane.getSelectedIndex() == 1) {
                     DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
                     Date dateobj = new Date();
                     DateText.setText(df.format(dateobj));
@@ -146,9 +185,13 @@ public class MainScreen extends JFrame {
         });
         SearchResults.addFocusListener(new FocusAdapter() {
         });
-        addNewUserButton.addActionListener(new ActionListener() {
+        addNewUserButt.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                AddUserScrn aus = new AddUserScrn();
+
+                aus.showAddUser();
+
 
             }
         });
@@ -158,6 +201,7 @@ public class MainScreen extends JFrame {
 
             }
         });
+
     }
 
 
@@ -224,8 +268,8 @@ public class MainScreen extends JFrame {
         ItemPricePanel.setBorder(BorderFactory.createTitledBorder("Item Price"));
         final JScrollPane scrollPane2 = new JScrollPane();
         ItemPricePanel.add(scrollPane2, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        list1 = new JList();
-        scrollPane2.setViewportView(list1);
+        ItemPriceList = new JList();
+        scrollPane2.setViewportView(ItemPriceList);
         ButtonPanelReal = new JPanel();
         ButtonPanelReal.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
         CheckoutTab.add(ButtonPanelReal, new com.intellij.uiDesigner.core.GridConstraints(1, 1, 1, 4, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_SOUTHEAST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
@@ -285,35 +329,6 @@ public class MainScreen extends JFrame {
         panel3.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         RetMgmt.add(panel3, new com.intellij.uiDesigner.core.GridConstraints(1, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JPanel panel4 = new JPanel();
-        
-        
-        rtResultsWindow = new JPanel();
-        rtResultsWindow.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        RetMgmt.add(rtResultsWindow, new com.intellij.uiDesigner.core.GridConstraints(1, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        final JScrollPane scrollPaneRT = new JScrollPane();
-        rtResultsWindow.add(scrollPaneRT, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-
-      //for the receipt data
-      final DefaultListModel listModelReceipts;
-      listModelReceipts = new DefaultListModel();
-      SearchResultsREC = new JList(listModelReceipts);
-
-
-      final Receipt receiptData = new Receipt();
-      searchButton.addActionListener(new ActionListener() {
-          public void actionPerformed(ActionEvent e) { 
-          	String searchItem = ReceiptIDField.getText();
-          	String returnSearch = ReceiptIDField.getText();
-          	
-          	
-          	
-          	System.out.println(receiptData.returnReceipt(searchItem));
-          	listModelReceipts.addElement(receiptData.returnReceipt(searchItem));
-          	
-          }
-       });
-      	scrollPaneRT.setViewportView(SearchResultsREC);
-        
         panel4.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         RetMgmt.add(panel4, new com.intellij.uiDesigner.core.GridConstraints(1, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         InvMgmt = new JPanel();
@@ -327,12 +342,12 @@ public class MainScreen extends JFrame {
         final JTextArea textArea1 = new JTextArea();
         textArea1.setText("");
         toolBar3.add(textArea1);
-        itemRadioButton = new JRadioButton();
-        itemRadioButton.setText("Item");
-        toolBar3.add(itemRadioButton);
-        distributorRadioButton = new JRadioButton();
-        distributorRadioButton.setText("Distributor");
-        toolBar3.add(distributorRadioButton);
+        InvItemRadioButton = new JRadioButton();
+        InvItemRadioButton.setText("Item");
+        toolBar3.add(InvItemRadioButton);
+        InvDistRadioButton = new JRadioButton();
+        InvDistRadioButton.setText("Distributor");
+        toolBar3.add(InvDistRadioButton);
         final com.intellij.uiDesigner.core.Spacer spacer4 = new com.intellij.uiDesigner.core.Spacer();
         toolBar3.add(spacer4);
         final JButton button1 = new JButton();
@@ -343,27 +358,8 @@ public class MainScreen extends JFrame {
         InvMgmt.add(ResultsWindow, new com.intellij.uiDesigner.core.GridConstraints(1, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JScrollPane scrollPane3 = new JScrollPane();
         ResultsWindow.add(scrollPane3, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-//        SearchResults = new JList();
-        
-      //creates a jlist item element for the search results
-        final DefaultListModel listModel;
-        listModel = new DefaultListModel();
-        SearchResults = new JList(listModel);
-
-
-        //button listener for search in inventory
-        final InventoryMan inventory = new InventoryMan();
-        button1.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {     
-               //inventory.searchItem(textArea1.getText());  
-            	String searchItem = textArea1.getText();
-            	System.out.println(inventory.searchItem(searchItem));
-            	listModel.addElement(inventory.searchItem(searchItem));
-            }
-         });
-        
+        SearchResults = new JList();
         scrollPane3.setViewportView(SearchResults);
-        
         UserCtrl = new JPanel();
         UserCtrl.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
         TabPane.addTab("User Ctrl.", UserCtrl);
@@ -382,15 +378,15 @@ public class MainScreen extends JFrame {
         final JPanel panel6 = new JPanel();
         panel6.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
         UserCtrl.add(panel6, new com.intellij.uiDesigner.core.GridConstraints(1, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        addNewUserButton = new JButton();
-        addNewUserButton.setText("Add New User");
-        panel6.add(addNewUserButton);
-        removeUserButton = new JButton();
-        removeUserButton.setText("Remove User");
-        panel6.add(removeUserButton);
-        editUserButton = new JButton();
-        editUserButton.setText("Edit User");
-        panel6.add(editUserButton);
+        addNewUserButt = new JButton();
+        addNewUserButt.setText("Add New User");
+        panel6.add(addNewUserButt);
+        removeUserButt = new JButton();
+        removeUserButt.setText("Remove User");
+        panel6.add(removeUserButt);
+        editUserButt = new JButton();
+        editUserButt.setText("Edit User");
+        panel6.add(editUserButt);
         final JPanel panel7 = new JPanel();
         panel7.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
         rootPanel.add(panel7, BorderLayout.SOUTH);
@@ -408,3 +404,23 @@ public class MainScreen extends JFrame {
         return rootPanel;
     }
 }
+
+//final DefaultListModel listModel;
+//listModel = new DefaultListModel();
+//SearchResults = new JList(listModel);
+//
+//
+////button listener for search in inventory
+//final InventoryMan inventory = new InventoryMan();
+//button1.addActionListener(new ActionListener() {
+//    public void actionPerformed(ActionEvent e) {     
+//       //inventory.searchItem(textArea1.getText());  
+//    	String searchItem = textArea1.getText();
+//    	System.out.println(inventory.searchItem(searchItem));
+//    	listModel.addElement(inventory.searchItem(searchItem));
+//    }
+// });
+//
+//scrollPane3.setViewportView(SearchResults);
+//
+//UserCtrl = new JPanel();

@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Scanner;
 import java.util.Vector;
 
@@ -199,6 +200,98 @@ public class Receipt {
 	       }
 	       System.out.println("Operation done successfully");
 	       return newReceipt.toString();
+	}
+	
+	//return an item back to inventory
+	public String returnBackItem(String recNum, int sku, double amountReturned){
+		   Receipt newReceipt = new Receipt();
+		   Connection c = null;
+		   Connection c2 = null;
+	       Statement stmt = null;
+	       Statement stmt2 = null;
+	       try {
+	       Class.forName("org.postgresql.Driver");
+	         c = DriverManager.getConnection("jdbc:postgresql://localhost:5433/test","postgres", "aaronrocks");
+	         c.setAutoCommit(false);
+	         c2 = DriverManager.getConnection("jdbc:postgresql://localhost:5433/test","postgres", "aaronrocks");
+	 	     c2.setAutoCommit(false);
+	 	     
+	         System.out.println("Opened database successfully");
+	         
+	         stmt = c.createStatement();
+	         stmt2 = c2.createStatement();
+	         ResultSet rs = stmt.executeQuery( "SELECT * FROM RECEIPTS WHERE receiptnumber = " + recNum + ";" );
+	         ResultSet ss;
+	         
+	         Vector<Item> realItems = new Vector<Item>();
+	         //first connection to grab everything but item list
+	         while ( rs.next() ) {
+	            newReceipt.setReceiptNum(rs.getInt("receiptnumber"));
+	            newReceipt.setDate(rs.getString("date"));
+	            newReceipt.setTime(rs.getString("time"));
+	            newReceipt.setPayMethod(rs.getString("paymethod"));
+	            newReceipt.setTotalPay(rs.getFloat("totalpay"));
+	            
+	            //allows for sql arrays to be converted to a vector of items
+	            Array its = rs.getArray(6);
+	            String[] str_items = (String[])its.getArray();
+	            Vector<String> newItem_str = new Vector<String>(Arrays.asList(str_items));
+	            
+	            
+	            //search database for items by sku in database and store in a vector
+	            for(int i = 0; i < newItem_str.size(); i++){
+	            	Item fromData = new Item();
+	            	ss = stmt2.executeQuery("SELECT * FROM INVENTORY WHERE sku = " + Integer.parseInt(newItem_str.elementAt(i)) + ";");
+	            	while(ss.next()){
+	            		fromData.setSku(ss.getInt("sku"));
+	            		fromData.setName(ss.getString("name"));
+	            		fromData.setQuantity(ss.getFloat("quantity"));
+	            		fromData.setPrice(ss.getFloat("price"));
+	            		fromData.setDist(ss.getString("distributor"));
+	            		fromData.setWeight(ss.getString("weight"));
+	            	}
+	            	realItems.add(fromData);
+	            }  
+	            newReceipt.setItemVector(realItems);
+	         }
+	         
+	         Vector<Integer> onlySku = new Vector<Integer>();
+	         for (int j = 0; j < realItems.size(); j++){
+	         	onlySku.add(realItems.elementAt(j).getSku());	//convert the item list to a vector of only the total sku's
+	         }
+	 		 double occurrences = Collections.frequency(onlySku, sku);	//find the amount of sku's that are the same
+	         
+	         InventoryMan returnItem = new InventoryMan();
+	         
+	         if(occurrences == 0.0){
+	        	 return "The item doesnt exist in the receipt list";
+	         }
+	         else if(occurrences >= amountReturned){
+	        	 Item tempItem = new Item();
+	        	 for(int i = 0; i < realItems.size(); i++){
+	        		 if(realItems.elementAt(i).getSku() == sku){
+	        			 tempItem = new Item(realItems.elementAt(i));
+	        		 }
+	        	 }
+	        	 
+	        	 tempItem.setQuantity(tempItem.getQuantity() - amountReturned);
+	        	 
+	        	 returnItem.updateItem(tempItem, sku);
+	        	 return amountReturned + " has been returned.";
+	         }
+	         else if(occurrences < amountReturned){
+	        	 return "The amount returned is greater than what was purchased.";
+	         }
+	         
+	         rs.close();
+	         stmt.close();
+	         c.close();
+	       } catch ( Exception e ) {
+	         System.err.println( e.getClass().getName()+": "+ e.getMessage() );
+	         System.exit(0);
+	       }
+	       System.out.println("Operation done successfully");
+		return null;
 	}
 	
 	public void createReceipt(){	//creates a receipt based off of checkout items

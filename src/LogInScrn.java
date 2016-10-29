@@ -1,71 +1,51 @@
 package project;
 
 import javax.swing.*;
-import java.awt.event.*;
 
-public class LogInScrn extends JDialog {
-    private JPanel contentPane;
-    private JButton buttonOK;
-    private JButton buttonCancel;
-    private JTextField UserNameEntry;
-    private JPasswordField UserPWEntry;
-    private JLabel UNLabel;
-    private JLabel PWDLabel;
-    private JLabel welcomeDialogLabel;
+/**
+ * Created by Rulon and Aaron on 10/27/16.
+ */
+public class LogInScrn extends JFrame {
 
-    public LogInScrn() {
-        setContentPane(contentPane);
-        setModal(true);
-        getRootPane().setDefaultButton(buttonOK);
+    String userString;      //Intermediate value stored from the Username JTextField
+    String passString;      //Intermediate value stored from the Password JTextField
 
-        buttonOK.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onOK();
+    int userInt;            //the toInt() result of the intermediate value
+    int passInt;            //the toInt() result of the intermediate value
+    int resultInt;          //The resulting status of the function; position [0] in the returned Object array
+
+    userAccounts ua = new userAccounts();           //Position [1] in the returned Object array
+    JTextField un = new JTextField();
+    JTextField pw = new JPasswordField();
+
+    public Object[] showLogin() {
+        Object[] contents = {
+                "Please enter your username:", un,
+                "Please enter your password:", pw
+        };
+
+        int input = JOptionPane.showConfirmDialog(null, contents, "Login", JOptionPane.OK_CANCEL_OPTION);
+
+        if (input == JOptionPane.OK_OPTION && !un.getText().equals("") && !pw.getText().equals("")) {
+            userString = un.getText();
+            passString = pw.getText();
+
+            userInt = Integer.parseInt(userString);
+            passInt = Integer.parseInt(passString);
+            boolean loginStatus = ua.loginCheck(userInt, passInt);
+            if (loginStatus) {
+                JOptionPane.showConfirmDialog(null, "Login success!", "Success", JOptionPane.OK_OPTION);
+                Object [] result = {1, ua};
+                return result;
+            } else {
+                JOptionPane.showMessageDialog(null, "Please check your login credentials\nand try again.", "Login Failure",
+                        JOptionPane.OK_OPTION);
             }
-        });
 
-        buttonCancel.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onCancel();
-            }
-        });
-
-        // call onCancel() when cross is clicked
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent e) {
-                onCancel();
-            }
-        });
-
-        // call onCancel() on ESCAPE
-        contentPane.registerKeyboardAction(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onCancel();
-            }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        } else if (input == JOptionPane.CANCEL_OPTION) {
+            System.exit(-1);
+        }
+        Object [] result = {0, ua};
+        return result;
     }
-
-    private String onOK() {
-        String user = UserNameEntry.getText();
-        char[] pwd = UserPWEntry.getPassword();
-
-        String pwdCompare = pwd.toString();
-
-
-        dispose();
-        return null;
-    }
-
-    private void onCancel() {
-        // add your code here if necessary
-        dispose();
-    }
-
-//    public static void main(String[] args) {
-//        LogInScrn dialog = new LogInScrn();
-//        dialog.pack();
-//        dialog.setVisible(true);
-//        System.exit(0);
-//    }
 }
