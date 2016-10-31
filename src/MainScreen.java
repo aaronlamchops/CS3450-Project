@@ -198,7 +198,7 @@ public class MainScreen extends JFrame {
         addItemButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+            	JOptionPane.showMessageDialog(null, "HERE!");
             }
         });
 
@@ -359,8 +359,30 @@ public class MainScreen extends JFrame {
         final JScrollPane scrollPane3 = new JScrollPane();
         ResultsWindow.add(scrollPane3, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         SearchResults = new JList();
-        scrollPane3.setViewportView(SearchResults);
-        UserCtrl = new JPanel();
+        
+      final DefaultListModel listModel;
+      listModel = new DefaultListModel();
+      SearchResults = new JList(listModel);
+      
+      
+      //button listener for search in inventory
+      final InventoryMan inventory = new InventoryMan();
+      button1.addActionListener(new ActionListener() {
+          public void actionPerformed(ActionEvent e) {     
+             //inventory.searchItem(textArea1.getText());  
+          	String searchItem = textArea1.getText();
+          	System.out.println(inventory.searchItem(searchItem));
+          	listModel.addElement(inventory.searchItem(searchItem));
+          }
+       });
+      
+      scrollPane3.setViewportView(SearchResults);
+      
+      UserCtrl = new JPanel();
+        
+        
+//        scrollPane3.setViewportView(SearchResults);
+//        UserCtrl = new JPanel();
         UserCtrl.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
         TabPane.addTab("User Ctrl.", UserCtrl);
         final JPanel panel5 = new JPanel();

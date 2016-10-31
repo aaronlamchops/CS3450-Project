@@ -34,18 +34,24 @@ public class PostgreSQLJDBC {
        //myUser.createTable();
        
        
-       //MainScreen screen = new MainScreen();
+       MainScreen screen = new MainScreen();
        
        
 /*Test Trials for XLS_IMPORT*/
        XLS_Import newImport = new XLS_Import();
+//       try {
+//		newImport.createReportSheet("10-01-16", "10-04-16");
+//	} catch (Exception e) {
+//		// TODO Auto-generated catch block
+//		e.printStackTrace();
+//	}
        //newImport.createExample();
        //newImport.readFile("XLSimportTest.xlsx");
        
        
 /*Test Trials for INVENTORY*/       
        InventoryMan newInv = new InventoryMan();
-//       Item update = new Item(87654, "Steak", 10.0, 7.15, "MooMooFarms", "12oz");
+//       Item update = new Item(123, "DogFood", 10.0, 8.25, "HealthDogs", "3lb");
 //       newInv.uploadNewItem(update);
        //newInv.updateItem(update, 123);
        //newInv.deleteItem(123);

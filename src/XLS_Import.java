@@ -5,10 +5,20 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.sql.Array;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.Vector;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -30,9 +40,9 @@ public class XLS_Import {
 	       }
 	}
 	
-	public void createExample(){
+	public void createExample(String start, String end){
 		try {
-			createExampleSheet();
+			createReportSheet(start, end);
 	       } catch (Exception e) {
 	    	   // TODO Auto-generated catch block
 	    	   e.printStackTrace();
@@ -104,7 +114,8 @@ public class XLS_Import {
 		
 	}
 	
-	public void createExampleSheet() throws Exception{
+	@SuppressWarnings("null")
+	public void createReportSheet(String startDate, String endDate) throws Exception{
 		
 		//Create blank workbook
 	      XSSFWorkbook workbook = new XSSFWorkbook(); 
@@ -115,14 +126,135 @@ public class XLS_Import {
 	      XSSFRow row;
 	      //This data needs to be written (Object[])
 	      Map < String, Object[] > empinfo = 
-	      new TreeMap < String, Object[] >();
+	      new TreeMap < String, Object[] >(); 
 	      
-	      empinfo.put( "1", new Object[] { "SKU", "NAME", "QUANTITY", "PRICE", "DISTRIBUTOR", "WEIGHT" });
-	      empinfo.put( "2", new Object[] { "1357", "Mustard", "30", "2.99", "Heinz", "13oz" });
-	      empinfo.put( "3", new Object[] { "1468", "Pepper", "15", "2.49", "McCormick", "6oz" });
-	      empinfo.put( "4", new Object[] { "2468", "Salt", "15", "2.49", "Morton", "26oz" });
-	      empinfo.put( "5", new Object[] { "7890", "Sausage", "13", "5.29", "Hillshire", "16oz" });
-	      empinfo.put( "6", new Object[] { "4567", "Milk", "10", "3.29", "MeadowGold", "1gal" });
+	      //check how many receipts there are:
+	      
+	      
+	      //end
+	      
+	      
+	      //create a query from the database to find a range of items sold from a set date period
+	      
+	      Vector<Receipt> listOfReceipts = new Vector<Receipt>();
+	      Receipt temp = new Receipt();
+	      
+	      double total = 0.0;
+	      Connection c = null;
+	      Connection c2 = null;
+	      Statement stmt = null;
+	      Statement stmt2 = null;
+		  		try {
+		  		Class.forName("org.postgresql.Driver");
+		        c = DriverManager.getConnection("jdbc:postgresql://localhost:5433/test","postgres", "aaronrocks");
+		        c.setAutoCommit(false);
+		        c2 = DriverManager.getConnection("jdbc:postgresql://localhost:5433/test","postgres", "aaronrocks");
+		 	    c2.setAutoCommit(false);
+		 	     
+		        System.out.println("Opened database successfully");
+		         
+		        stmt = c.createStatement();
+		        stmt2 = c2.createStatement();
+		        ResultSet rs = stmt.executeQuery( "SELECT * FROM receipts WHERE date BETWEEN '" + startDate +"' AND '" + endDate + "';" );
+		        ResultSet ss;
+		        int index = 0; 
+		        
+		        Receipt fromQuery = new Receipt();
+		        //first connection to grab everything but item list
+		        while ( rs.next() ) {
+		        	listOfReceipts.addElement(temp);
+		        	System.out.println("Here!");
+		        	System.out.println(index);
+		        	fromQuery.setReceiptNum(rs.getInt("receiptnumber"));
+		        	fromQuery.setDate(rs.getString("date"));
+		        	fromQuery.setTime(rs.getString("time"));
+		        	fromQuery.setPayMethod(rs.getString("paymethod"));
+		        	total += rs.getFloat("totalpay");
+		        	System.out.println(total);
+		        	System.out.println("Here!");
+		            //allows for sql arrays to be converted to a vector of items
+		            Array its = rs.getArray(6);
+		            String[] str_items = (String[])its.getArray();
+		            Vector<String> newItem_str = new Vector<String>(Arrays.asList(str_items));
+		            Vector<Item> realItems = new Vector<Item>();
+		            System.out.println("Here!");
+		            //search database for items by sku in database and store in a vector
+		            for(int i = 0; i < newItem_str.size(); i++){
+		            	Item fromData = new Item();
+		            	ss = stmt2.executeQuery("SELECT * FROM INVENTORY WHERE sku = " + Integer.parseInt(newItem_str.elementAt(i)) + ";");
+		            	while(ss.next()){
+		            		fromData.setSku(ss.getInt("sku"));
+		            		fromData.setName(ss.getString("name"));
+		            		fromData.setQuantity(ss.getFloat("quantity"));
+		            		fromData.setPrice(ss.getFloat("price"));
+		            		fromData.setDist(ss.getString("distributor"));
+		            		fromData.setWeight(ss.getString("weight"));
+		            	}
+		            	realItems.add(fromData);
+		            }  
+		            fromQuery.getItemVector().addAll(realItems);
+		            listOfReceipts.addElement(fromQuery);
+		            index++;
+		        } 
+		        rs.close();
+		        stmt.close();
+		        c.close();
+		  } catch ( Exception e ) {
+		         System.err.println( e.getClass().getName()+": "+ e.getMessage() );
+		         System.exit(0);
+		  }
+		  System.out.println("Operation done successfully");
+	      
+		  double totalProfit = 0.0;
+		  double itemsSoldCount = 0.0;
+		  Vector<Integer> onlySku = new Vector<Integer>();
+		  
+	      for(int i = 0; i < listOfReceipts.size(); i++){
+	    	  totalProfit += listOfReceipts.elementAt(i).getTotalPay();
+	    	  System.out.println(totalProfit);
+	    	  
+	    	  for(int j = 0; j < listOfReceipts.elementAt(i).getItemVector().size(); j++){
+	    		  itemsSoldCount++;
+	    		  onlySku.add(listOfReceipts.elementAt(i).getItemVector().elementAt(j).getSku());
+	    	  }
+	      }
+	      
+	      System.out.println(onlySku.size());
+	      
+		  Set<Integer> uniqueSku = new HashSet<Integer>();
+	      for(int i = 0; i < onlySku.size(); i++){
+	    	  if(uniqueSku.add(onlySku.elementAt(i)) == false){
+	    		  System.out.println("duplicate found");
+	    	  }
+	      }
+	      
+	      Vector<Integer> noDuplicates = new Vector<Integer>(uniqueSku);
+	      double occurrences = 0.0;
+	      
+	      Vector<String> skuForReport = new Vector<String>();
+	      Vector<String> quantityForReport = new Vector<String>();
+
+	      
+	      for(int i = 0; i < uniqueSku.size(); i++){
+	    	  occurrences = Collections.frequency(onlySku, noDuplicates.elementAt(i));
+	    	  skuForReport.addElement(noDuplicates.elementAt(i).toString());
+	    	  quantityForReport.addElement(Double.toString(occurrences));
+	      }
+	       
+	      
+	      //end
+	      
+	      empinfo.put( "1", new Object[] { "Report for Dates:", startDate, endDate, " ", " ", " " });
+	      int after = 0;
+	      for(int i = 0; i < skuForReport.size(); i++){
+	    	  after++;
+	    	  double q = Double.parseDouble(quantityForReport.elementAt(i));
+	    	  System.out.println(q);
+	    	  empinfo.put(Integer.toString(i + 2), new Object[] { skuForReport.elementAt(i) + ": ", Double.toString(q/3.0) , " items sold", " ", " ", " " });
+	      }
+	      after = after + 2;
+	      empinfo.put( Integer.toString(after), new Object[] { "Total number of Orders: ", Integer.toString(listOfReceipts.size()), " ", " ", " ", " " });
+	      empinfo.put( Integer.toString(after+1), new Object[] { "Total profit: ", Double.toString(total), " ", " ", " ", " " });
 	      
 	      //Iterate over data and write to sheet
 	      Set < String > keyid = empinfo.keySet();

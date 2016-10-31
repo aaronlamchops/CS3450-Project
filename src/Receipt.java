@@ -86,6 +86,10 @@ public class Receipt {
 		return items;
 	}
 	
+	public int itemSize(){
+		return items.size();
+	}
+	
 	public String vectorToString(){
 		
 		String items = "ITEMS: \r";
