@@ -3,11 +3,14 @@ package project;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Vector;
 
 
 public class MainScreen extends JFrame {
@@ -20,7 +23,7 @@ public class MainScreen extends JFrame {
     private JButton voidLastItemButton;
     private JPanel CheckoutTab;
     private JPanel ButtonPanelReal;
-    private JTextArea ReceiptIDField;
+    private JTextField ReceiptIDField;
     private JButton searchButton;
     private JPanel RetMgmt;
     private JPanel WelcomeScrn;
@@ -28,10 +31,8 @@ public class MainScreen extends JFrame {
     private JPanel UserCtrl;
     private JList SearchResults;
     private JPanel ResultsWindow;
-    private JRadioButton InvItemRadioButton;
-    private JRadioButton InvDistRadioButton;
-    private JRadioButton receiptNumberRadioButton;
-    private JRadioButton custNameRadioButton;
+    private JRadioButton InvSKURadio;
+    private JRadioButton InvDescRadio;
     private JButton logOutButton;
     private JRadioButton cardRadioButton;
     private JRadioButton cashRadioButton;
@@ -67,7 +68,7 @@ public class MainScreen extends JFrame {
     private JScrollPane SecondRetSearchResSP;
     private JToolBar InvSearchBar;
     private JLabel InvSearchLbl;
-    private JTextArea InvSearchTermText;
+    private JTextField InvSearchTermText;
     private JButton InvSearchButt;
     private JScrollPane SearchResultsSP;
     private JPanel InventoryButtPanel;
@@ -75,6 +76,8 @@ public class MainScreen extends JFrame {
     private JLabel MCCTitleText;
     private JLabel MCCNavText;
     private JPanel MCCButtPanel;
+    private JLabel ImportTitleLabel;
+    private JButton importButton;
 
 
     public MainScreen() {
@@ -83,26 +86,29 @@ public class MainScreen extends JFrame {
 
         setContentPane(rootPanel);
 
-        setPreferredSize(new Dimension(1200, 800));
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
 
         pack();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        LogInScrn li = new LogInScrn();
+        final LogInScrn li = new LogInScrn();
 
         final userAccounts ua = new userAccounts();
 
-        Object [] returnedFromLogin = {};
+        Object[] returnedFromLogin = {};
         int loginSuccess = 0;
         while (loginSuccess == 0) {
 
             returnedFromLogin = (li.showLogin());
 
-            loginSuccess = (Integer)returnedFromLogin[0];
-            ua.setEq((userAccounts)returnedFromLogin[1]);
+            loginSuccess = (Integer) returnedFromLogin[0];
+            ua.setEq((userAccounts) returnedFromLogin[1]);
 
 
-            if (loginSuccess == 1)
+            if (loginSuccess == 1) {
                 setVisible(true);
+                TabPane.requestFocus();
+                rootPanel.requestFocus();
+            }
         }
 
         cardRadioButton.addActionListener(new ActionListener() {
@@ -165,10 +171,11 @@ public class MainScreen extends JFrame {
         TabPane.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
+
                 if (TabPane.getSelectedIndex() == 4 && !ua.accType.equals("admin")) {
                     JOptionPane.showMessageDialog(TabPane,
                             "This tab is for the manager's eyes only.\nPlease log in as a manager and try again." +
-                            "\nCurrent account type: " +ua.accType,
+                                    "\nCurrent account type: " + ua.accType,
                             "Get Outta Here!",
                             JOptionPane.ERROR_MESSAGE);
                     TabPane.setSelectedIndex(0);
@@ -177,6 +184,7 @@ public class MainScreen extends JFrame {
                     DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
                     Date dateobj = new Date();
                     DateText.setText(df.format(dateobj));
+                    ReceiptNoText.setText("");
                 }
 
             }
@@ -198,10 +206,113 @@ public class MainScreen extends JFrame {
         addItemButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-            	JOptionPane.showMessageDialog(null, "HERE!");
+
             }
         });
 
+        removeUserButt.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                DeleteUserScrn dus = new DeleteUserScrn();
+
+                dus.showRemoveUser(ua);
+            }
+        });
+        logOutButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                setVisible(false);
+                int loginSuccess = 0;
+                Object[] returnedFromLogin;
+
+                while (loginSuccess == 0) {
+
+                    returnedFromLogin = (li.showLogin());
+
+                    loginSuccess = (Integer) returnedFromLogin[0];
+                    ua.setEq((userAccounts) returnedFromLogin[1]);
+
+
+                    if (loginSuccess == 1) {
+                        TabPane.requestFocus();
+                        rootPanel.requestFocus();
+                        setVisible(true);
+                    }
+                }
+
+            }
+        });
+        rootPanel.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                super.focusGained(e);
+                    WelcomeLbl.setText("Welcome, " + " " + ua.accType + " " + ua.name + "!");
+
+
+            }
+        });
+
+        editUserButt.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                EditUserScrn es = new EditUserScrn();
+                userAccounts uaTemp = new userAccounts();
+                uaTemp.setEq(es.showEditUser(ua));
+
+                if (uaTemp.userId == ua.userId) {
+                    setVisible(false);
+                    int loginSuccess = 0;
+                    Object[] returnedFromLogin;
+
+                    while (loginSuccess == 0) {
+
+                        returnedFromLogin = (li.showLogin());
+
+                        loginSuccess = (Integer) returnedFromLogin[0];
+                        ua.setEq((userAccounts) returnedFromLogin[1]);
+
+
+                        if (loginSuccess == 1) {
+                            TabPane.requestFocus();
+                            rootPanel.requestFocus();
+                            setVisible(true);
+                        }
+                    }
+                }
+
+                TabPane.setSelectedIndex(0);
+            }
+        });
+        InvSearchButt.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                InventoryMan im = new InventoryMan();
+                if (InvSKURadio.isSelected())
+                {
+                    SearchResults.setListData(((im.searchItem((String)InvSearchTermText.getText(),0))));
+                }
+                else
+                {
+                    SearchResults.setListData(((im.searchItem((String)InvSearchTermText.getText(),1))));
+                }
+            }
+        });
+        addNewItemButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                AddItemScrn ai = new AddItemScrn();
+                ai.showAddItem();
+
+            }
+        });
+
+        SearchResults.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                modifyItemButton.setEnabled(true);
+            }
+        });
     }
 
 
@@ -311,15 +422,9 @@ public class MainScreen extends JFrame {
         final JLabel label5 = new JLabel();
         label5.setText("Search Term:");
         toolBar2.add(label5);
-        ReceiptIDField = new JTextArea();
+        ReceiptIDField = new JTextField();
         ReceiptIDField.setText("");
         toolBar2.add(ReceiptIDField);
-        custNameRadioButton = new JRadioButton();
-        custNameRadioButton.setText("Cust. Name");
-        toolBar2.add(custNameRadioButton);
-        receiptNumberRadioButton = new JRadioButton();
-        receiptNumberRadioButton.setText("Receipt Number");
-        toolBar2.add(receiptNumberRadioButton);
         final com.intellij.uiDesigner.core.Spacer spacer3 = new com.intellij.uiDesigner.core.Spacer();
         toolBar2.add(spacer3);
         searchButton = new JButton();
@@ -342,12 +447,12 @@ public class MainScreen extends JFrame {
         final JTextArea textArea1 = new JTextArea();
         textArea1.setText("");
         toolBar3.add(textArea1);
-        InvItemRadioButton = new JRadioButton();
-        InvItemRadioButton.setText("Item");
-        toolBar3.add(InvItemRadioButton);
-        InvDistRadioButton = new JRadioButton();
-        InvDistRadioButton.setText("Distributor");
-        toolBar3.add(InvDistRadioButton);
+        InvSKURadio = new JRadioButton();
+        InvSKURadio.setText("Item");
+        toolBar3.add(InvSKURadio);
+        InvDescRadio = new JRadioButton();
+        InvDescRadio.setText("Distributor");
+        toolBar3.add(InvDescRadio);
         final com.intellij.uiDesigner.core.Spacer spacer4 = new com.intellij.uiDesigner.core.Spacer();
         toolBar3.add(spacer4);
         final JButton button1 = new JButton();
@@ -359,30 +464,8 @@ public class MainScreen extends JFrame {
         final JScrollPane scrollPane3 = new JScrollPane();
         ResultsWindow.add(scrollPane3, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         SearchResults = new JList();
-        
-      final DefaultListModel listModel;
-      listModel = new DefaultListModel();
-      SearchResults = new JList(listModel);
-      
-      
-      //button listener for search in inventory
-      final InventoryMan inventory = new InventoryMan();
-      button1.addActionListener(new ActionListener() {
-          public void actionPerformed(ActionEvent e) {     
-             //inventory.searchItem(textArea1.getText());  
-          	String searchItem = textArea1.getText();
-          	System.out.println(inventory.searchItem(searchItem));
-          	listModel.addElement(inventory.searchItem(searchItem));
-          }
-       });
-      
-      scrollPane3.setViewportView(SearchResults);
-      
-      UserCtrl = new JPanel();
-        
-        
-//        scrollPane3.setViewportView(SearchResults);
-//        UserCtrl = new JPanel();
+        scrollPane3.setViewportView(SearchResults);
+        UserCtrl = new JPanel();
         UserCtrl.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
         TabPane.addTab("User Ctrl.", UserCtrl);
         final JPanel panel5 = new JPanel();
@@ -426,23 +509,3 @@ public class MainScreen extends JFrame {
         return rootPanel;
     }
 }
-
-//final DefaultListModel listModel;
-//listModel = new DefaultListModel();
-//SearchResults = new JList(listModel);
-//
-//
-////button listener for search in inventory
-//final InventoryMan inventory = new InventoryMan();
-//button1.addActionListener(new ActionListener() {
-//    public void actionPerformed(ActionEvent e) {     
-//       //inventory.searchItem(textArea1.getText());  
-//    	String searchItem = textArea1.getText();
-//    	System.out.println(inventory.searchItem(searchItem));
-//    	listModel.addElement(inventory.searchItem(searchItem));
-//    }
-// });
-//
-//scrollPane3.setViewportView(SearchResults);
-//
-//UserCtrl = new JPanel();

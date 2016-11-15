@@ -1,4 +1,4 @@
-package project;
+//package project;
 
 import javax.swing.*;
 import java.sql.Connection;
@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Scanner;
+import java.util.Vector;
 
 public class userAccounts {
 	
@@ -46,16 +47,11 @@ public class userAccounts {
 		this.accType = ua.accType;
 	}
 
-	public userAccounts returnUser(int u, int p){
+	public Vector returnUIDS(){
 		{
-			//check logins
-
-
-			//set credentials for two parameters
-			this.setCredentials(u, p);
-
 			Connection c = null;
 			Statement stmt = null;
+			Vector UIDList = new Vector();
 			try {
 				Class.forName("org.postgresql.Driver");
 				c = DriverManager
@@ -65,26 +61,22 @@ public class userAccounts {
 				System.out.println("Opened database successfully");
 
 				stmt = c.createStatement();
-				ResultSet rs = stmt.executeQuery( "SELECT * FROM \"USERS\" WHERE \"PASSWORD\" = " + Integer.toString(p)
-						+ " AND \"ID\" = " + u + ";" );
+				ResultSet rs = stmt.executeQuery( "SELECT \"ID\" FROM \"USERS\"" );
+
+
 
 				while ( rs.next() ) {
 					//store data into class type temps
-					int uId = rs.getInt("id");
-					String na = rs.getString("name");
-					int pass  = rs.getInt("password");
-					String at = rs.getString("type");
+					UIDList.add(rs.getInt("ID"));
 
 					//check if credentials is correct and store in userAccount instance if true, else return false
-					if(this.userId == uId && this.password == pass){
-						this.setAll(uId, na, pass, at);
-						System.out.println("User login success!");
-						return this;
-					}
+
 				}
+
 				rs.close();
 				stmt.close();
 				c.close();
+				return UIDList;
 			} catch ( Exception e ) {
 				System.err.println( e.getClass().getName()+": "+ e.getMessage() );
 				if(e.getLocalizedMessage() == "The connection attempt failed.")
@@ -95,7 +87,7 @@ public class userAccounts {
 				System.exit(0);
 			}
 			System.out.println("Operation done successfully");
-			return this;
+			return UIDList;
 		}
 
 
@@ -113,84 +105,6 @@ public class userAccounts {
 	public void setCredentials(int u, int p){
 		userId = u;
 		password = p;
-	}
-	/*
-	public void createTable(){
-		Connection c = null;
-	       Statement stmt = null;
-	       try {
-	         Class.forName("org.postgresql.Driver");
-	         c = DriverManager
-	            .getConnection("jdbc:postgresql://localhost:5433/test",
-	            "postgres", "aaronrocks");
-	         System.out.println("Opened database successfully");
-	         stmt = c.createStatement();
-	         String sql = "CREATE TABLE INVENTORY " +
-	                      "(SKU INT PRIMARY KEY     NOT NULL," +
-	                      " NAME           TEXT    NOT NULL, " +
-	                      " QUANTITY       FLOAT     NOT NULL, " +
-	                      " PRICE          FLOAT   NOT NULL, " +
-	                      " DISTRIBUTOR    TEXT    NOT NULL," +
-	                      " WEIGHT         TEXT     NOT NULL)";
-	         stmt.executeUpdate(sql);
-	         stmt.close();
-	         c.close();
-	       } catch ( Exception e ) {
-	         System.err.println( e.getClass().getName()+": "+ e.getMessage() );
-	         System.exit(0);
-	       }
-	       System.out.println("Table created successfully");
-	}
-	*/
-	public boolean loginCheck(){					//check logins
-
-		//get user input
-		Scanner reader = new Scanner(System.in);
-		System.out.println("Please enter your user id: ");
-		int u = reader.nextInt();
-		System.out.println("Please enter your password: ");
-		int p = reader.nextInt();
-
-		//set credentials for two parameters
-		this.setCredentials(u, p);
-
-		Connection c = null;
-	      Statement stmt = null;
-	      try {
-	      Class.forName("org.postgresql.Driver");
-	        c = DriverManager
-	           .getConnection("jdbc:postgresql://vowoodhome.asuscomm.com:5454/test",
-	           "postgres", "toothpaste");
-	        c.setAutoCommit(false);
-	        System.out.println("Opened database successfully");
-
-	        stmt = c.createStatement();
-	        ResultSet rs = stmt.executeQuery( "SELECT * FROM \"USERS\" WHERE \"PASSWORD\" = " + Integer.toString(p)
-	        								+ " AND \"ID\" = " + u + ";" );
-
-	        while ( rs.next() ) {
-	        	//store data into class type temps
-	        	int uId = rs.getInt("id");
-	 	        String na = rs.getString("name");
-	 	        int pass  = rs.getInt("password");
-	 	        String at = rs.getString("type");
-
-	 	        //check if credentials is correct and store in userAccount instance if true, else return false
-	        	if(this.userId == uId && this.password == pass){
-	        		this.setAll(uId, na, pass, at);
-	        		System.out.println("User login success!");
-	        		return true;
-	        	}
-	        }
-	        rs.close();
-	        stmt.close();
-	        c.close();
-	      } catch ( Exception e ) {
-	        System.err.println( e.getClass().getName()+": "+ e.getMessage() );
-	        System.exit(0);
-	      }
-	      System.out.println("Operation done successfully");
-		return false;
 	}
 
 	public boolean loginCheck(int u, int p){					//check logins
@@ -282,63 +196,6 @@ public class userAccounts {
       System.out.println("Operation done successfully");
     }
 
-	//allows a admin user to create a user.
-	public boolean insertIntoTable(){
-
-		if(this.accType.equals("Guest") || this.accType.equals("Inv")){
-			System.out.println("Your account is not Admin." +
-								"\r" + "Please consult your Administrator.");
-			return false;
-		}
-		else{
-			//module for user input
-			Scanner reader = new Scanner(System.in);
-
-			Connection c = null;
-		      Statement stmt = null;
-		      try {
-		         Class.forName("org.postgresql.Driver");
-
-		         //getting the database, user, password:
-		         c = DriverManager
-		            .getConnection("jdbc:postgresql://vowoodhome.asuscomm.com:5454/test",
-		            "postgres", "toothpaste");
-
-		         c.setAutoCommit(false);
-		         System.out.println("Opened database successfully");
-
-		         stmt = c.createStatement();
-
-		           // Reading from System.in
-		         System.out.println("Please enter id-number: ");
-		         String id = reader.next();
-		         System.out.println("Please enter name: ");
-		         String name = reader.next();
-		         System.out.println("Please enter password: ");
-		         String pass = reader.next();
-		         System.out.println("Please enter account type: ");
-		         String type = reader.next();
-
-		         //the commands that you are utilizing in the database
-		         String sql = "INSERT INTO \"USERS\" (\"ID\",NAME,\"PASSWORD\",TYPE) "
-		               + "VALUES (" + id + ", '" + name + "', " 
-		        		 + pass + ", '" + type + "' );";
-		         
-		         //updates to the sql server
-		         stmt.executeUpdate(sql);
-
-		         stmt.close();
-		         c.commit();
-		         c.close();
-		      } catch (Exception e) {
-		         System.err.println( e.getClass().getName()+": "+ e.getMessage() );
-		         System.exit(0);
-		      }
-		      System.out.println("Records created successfully");
-			return true;
-		}
-	}
-
     public boolean GUIInsertIntoTable(userAccounts ua) {
 
         Connection c = null;
@@ -356,17 +213,6 @@ public class userAccounts {
 
             stmt = c.createStatement();
 
-
-
-            /*// Reading from System.in
-            System.out.println("Please enter id-number: ");
-            String id = reader.next();
-            System.out.println("Please enter name: ");
-            String name = reader.next();
-            System.out.println("Please enter password: ");
-            String pass = reader.next();
-            System.out.println("Please enter account type: ");
-            String type = reader.next();*/
 
             //Checking for duplicate ID
             ResultSet rs = stmt.executeQuery( "SELECT * FROM \"USERS\" WHERE \"ID\" = "+ ua.userId + ";");
@@ -405,58 +251,96 @@ public class userAccounts {
 
     }
 
+	public boolean GUIDeleteUser(int UID) {
+		Connection c = null;
+		Statement stmt = null;
 
-    public boolean deleteUser() {
-		//check if user is admin
-		if(this.accType.equals("Guest") || this.accType.equals("Inv")){
-			System.out.println("Your account is not Admin." +
-								"\r" + "Please consult your Administrator.");
-			return false;
+		try {
+			Class.forName("org.postgresql.Driver");
+			c = DriverManager
+					.getConnection("jdbc:postgresql://vowoodhome.asuscomm.com:5454/test",
+							"postgres", "toothpaste");
+			c.setAutoCommit(false);
+			System.out.println("Opened database successfully");
+
+			int decision = JOptionPane.showConfirmDialog(null, "Are you sure you'd like to delete this user?","Confirm Delete", JOptionPane.YES_NO_OPTION);
+
+
+            if (decision == JOptionPane.YES_OPTION)
+            {
+                stmt = c.createStatement();
+                String sql = "DELETE from \"USERS\" where \"ID\" = " + UID + ";";
+                stmt.executeUpdate(sql);
+                c.commit();
+                stmt.close();
+                c.close();
+                return true;
+            }
+
+
+			//exit if they say no
+			else{
+				System.out.println("Ending Task.");
+                c.close();
+                stmt.close();
+				return false;
+			}
+
+		} catch ( Exception e ) {
+			System.err.println( e.getClass().getName()+": "+ e.getMessage() );
+			System.exit(0);
 		}
-		
-		Scanner reader = new Scanner(System.in);
-      Connection c = null;
-      Statement stmt = null;
-      
-      try {
-      Class.forName("org.postgresql.Driver");
-        c = DriverManager
-           .getConnection("jdbc:postgresql://vowoodhome.asuscomm.com:5454/test",
-           "postgres", "toothpaste");
-        c.setAutoCommit(false);
-        System.out.println("Opened database successfully");
+		System.out.println("Operation done successfully");
+		return true;
+	}
 
-        //input on what user to delete
-        System.out.println("Please enter id-number you would like to delete: ");
-        int id = reader.nextInt();
-        //double check if they would like to.
-        System.out.println("Would you like to proceed with this command? <Y> or <N>: ");
-        String yesorno = reader.next();
-        
-        //complete if yes
-        if(yesorno.equals("y") || yesorno.equals("Y")){
-        	stmt = c.createStatement();
-            String sql = "DELETE from \"USERS\" where \"ID\" = " + Integer.toString(id) + ";";
-            stmt.executeUpdate(sql);
-            c.commit();
-            stmt.close();
-            c.close();
-            System.out.println("User deleted.");
-            return true;
+	public boolean GUIEditUser(userAccounts ua) {
+        Connection c = null;
+        Statement stmt = null;
+
+        try {
+            Class.forName("org.postgresql.Driver");
+            c = DriverManager
+                    .getConnection("jdbc:postgresql://vowoodhome.asuscomm.com:5454/test",
+                            "postgres", "toothpaste");
+            c.setAutoCommit(false);
+            System.out.println("Opened database successfully");
+
+            int decision = JOptionPane.showConfirmDialog(null, "Please confirm the following changes:\n" +
+                    "UserID: " + ua.userId + "\n" +"Name: " + ua.name +"\n" + "Passcode: " + ua.password +"\n" +
+                    "User role: " + ua.accType + "\n\nIs this data all correct?","Confirm Edit",
+                    JOptionPane.YES_NO_OPTION);
+
+
+            if (decision == JOptionPane.YES_OPTION)
+            {
+                stmt = c.createStatement();
+                String sql = "UPDATE \"USERS\" SET \"NAME\" = '" + ua.name +"', \"PASSWORD\" = " +ua.password +", " +
+                 "\"TYPE\" = '" +ua.accType + "' WHERE \"ID\" = " + ua.userId + ";";
+                stmt.executeUpdate(sql);
+                c.commit();
+                stmt.close();
+                c.close();
+                return true;
+            }
+
+
+            //exit if they say no
+            else{
+                System.out.println("Ending Task.");
+                c.close();
+                stmt.close();
+                return false;
+            }
+
+        } catch ( Exception e ) {
+            System.err.println( e.getClass().getName()+": "+ e.getMessage() );
+            System.exit(0);
         }
-        //exit if they say no
-        else{
-        	System.out.println("Ending Task.");
-        	return false;
-        }
-        
-      } catch ( Exception e ) {
-        System.err.println( e.getClass().getName()+": "+ e.getMessage() );
-        System.exit(0);
-      }
-      System.out.println("Operation done successfully");
-	return true;
+        System.out.println("Operation done successfully");
+        return true;
     }
+
 
 	
 }
